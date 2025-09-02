@@ -8,4 +8,7 @@ export const UPDATE_PASSWORD = 'api/updatepassword';
 export const GET_CATEGORIES = 'api/getCategories';
 // export const GET_PROFILE = (userId) =>  'api/profile' + userId;
 export const GET_PROFILE = 'api/profile';
-export const UPDATE_PROFILE = 'api/profile/edit';
+export const UPDATE_PROFILE = 'api/updateProfile';
+export const CLOCK_IN = 'api/time/clock-in';
+export const CLOCK_OUT = 'api/time/clock-out';
+export const TIME_STATUS = 'api/time/status';

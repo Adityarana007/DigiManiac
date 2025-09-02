@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE } from "./apiUrls";
+import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE, CLOCK_IN, CLOCK_OUT, TIME_STATUS } from "./apiUrls";
 import apiClient from "./client";
 
 export const register = async (params) => {
@@ -26,4 +26,16 @@ export const getProfile = async (params) => {
 
 export const updateProfile = async (params) => {
     return await apiClient.put(UPDATE_PROFILE, params)
+}
+
+export const clockIn = async (params) => {
+    return await apiClient.post(CLOCK_IN, params)
+}
+
+export const clockOut = async (params) => {
+    return await apiClient.post(CLOCK_OUT, params)
+}
+
+export const getTimeStatus = async () => {
+    return await apiClient.get(TIME_STATUS)
 }

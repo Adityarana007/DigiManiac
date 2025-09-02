@@ -4,167 +4,239 @@ import { Colors } from "../../../assets/colors";
 import palette from "../../../assets/palette";
 
 const styles = StyleSheet.create({
+    // Original styles
     container: { flex: 1, backgroundColor: '#fff' },
+    logo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: Colors.APP_COLOR_DARK,
+    },
+    mainCardView: palette.view.noMargincardView,
+    parentView: palette.view.superParent,
+    cardView: palette.view.roundcardView,
+    shadowView: palette.view.shadowView,
+    
+    // Clock in/out styles
+    clockContainer: {
+        flex: 1,
+        padding: 20,
+    },
+    
     header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: 16,
-      alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 30,
     },
-    logo: { fontSize: 22, fontWeight: 'bold', color: '#3F51B5' },
-    profileIcon: { width: 36, height: 36, borderRadius: 18 },
-    logoIcon: { width: 112, height: 32, borderRadius: 18 },
-    searchBar: {
-      backgroundColor: '#f1f1f1',
-      marginHorizontal: 16,
-      borderRadius: 10,
-      padding: 10,
-      flexDirection: 'row',
+    
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: Colors.APP_COLOR_DARK,
+        textAlign: 'center',
+        flex: 1,
+        fontFamily: fonts.montserratBold,
     },
-    searchInput: {
-      fontSize: 16,
-      marginLeft: 10,
-      fontFamily: fonts.montserratMedium
+    
+    subtitle: {
+        fontSize: 16,
+        color: '#666',
+        textAlign: 'center',
+        fontFamily: fonts.montserratRegular,
+        position: 'absolute',
+        top: 35,
+        left: 0,
+        right: 0,
     },
-    categories: {
-      marginTop: 16,
-      paddingLeft: 16,
-      marginBottom: 4,
+    
+    statusCard: {
+        backgroundColor: Colors.white,
+        borderRadius: 16,
+        padding: 24,
+        alignItems: 'center',
+        marginBottom: 24,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 5,
     },
-    categoryItem: {
-      alignItems: 'center',
-      marginRight: 16,
+    
+    statusIcon: {
+        marginBottom: 16,
     },
-    categoryIcon: {
-      width: 60,
-      height: 60,
-      backgroundColor: '#ddd',
-      borderRadius: 30,
-      // marginBottom: 8,
+    
+    statusText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 8,
+        fontFamily: fonts.montserratSemiBold,
     },
-    categoryText: {
-      fontSize: 12,
-      textAlign: 'center',
-      fontFamily: fonts.montserratMedium,
-      marginTop: 8
-
+    
+    clockInTime: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 4,
+        fontFamily: fonts.montserratMedium,
     },
-    banner: {
-      backgroundColor: '#ffe3ec',
-      margin: 16,
-      borderRadius: 12,
-      flexDirection: 'row',
-      padding: 12,
-      alignItems: 'center',
+    
+    clockInDate: {
+        fontSize: 12,
+        color: '#999',
+        marginBottom: 8,
+        fontFamily: fonts.montserratRegular,
     },
-    bannerText: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#f44336',
+    
+    notesText: {
+        fontSize: 12,
+        color: '#666',
+        fontStyle: 'italic',
+        fontFamily: fonts.montserratRegular,
     },
-    subText: {
-      fontSize: 14,
-      color: '#555',
+    
+    timerContainer: {
+        backgroundColor: Colors.APP_COLOR_DARK,
+        borderRadius: 16,
+        padding: 20,
+        alignItems: 'center',
+        marginBottom: 24,
     },
-    shopNowBtn: {
-      marginTop: 10,
-      backgroundColor: '#f44336',
-      padding: 8,
-      borderRadius: 8,
-      alignSelf: 'flex-start',
+    
+    timerLabel: {
+        fontSize: 14,
+        color: Colors.white,
+        marginBottom: 8,
+        fontFamily: fonts.montserratMedium,
     },
-    shopNowText: {
-      color: '#fff',
-      fontWeight: 'bold',
+    
+    timerContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
-    bannerImg: {
-      width: 100,
-      height: 100,
-      borderRadius: 8,
-      marginLeft: 10,
+    
+    timeUnit: {
+        alignItems: 'center',
+        marginHorizontal: 8,
     },
-    dealBox: {
-      backgroundColor: '#E3F2FD',
-      margin: 16,
-      borderRadius: 10,
-      padding: 16,
+    
+    timeValue: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: Colors.white,
+        fontFamily: fonts.montserratBold,
     },
-    dealTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
+    
+    timeLabel: {
+        fontSize: 12,
+        color: Colors.white,
+        fontFamily: fonts.montserratMedium,
+        marginTop: 2,
     },
+    
+    timeSeparator: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: Colors.white,
+        fontFamily: fonts.montserratBold,
+        marginHorizontal: 4,
+    },
+    
     timer: {
-      color: '#333',
-      marginTop: 4,
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: Colors.white,
+        fontFamily: fonts.montserratBold,
     },
-    viewAllBtn: {
-      marginTop: 10,
-      alignSelf: 'flex-start',
-      padding: 6,
-      paddingHorizontal: 12,
-      backgroundColor: '#2196F3',
-      borderRadius: 6,
+    
+    durationContainer: {
+        backgroundColor: '#f8f9fa',
+        borderRadius: 16,
+        padding: 20,
+        alignItems: 'center',
+        marginBottom: 24,
+        borderWidth: 1,
+        borderColor: '#e1e5e9',
     },
-    viewAllText: {
-      color: '#fff',
+    
+    durationLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 8,
+        fontFamily: fonts.montserratMedium,
     },
-    productGrid: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      flexWrap: 'wrap',
-      paddingBottom: 32,
+    
+    duration: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: Colors.APP_COLOR_DARK,
+        fontFamily: fonts.montserratBold,
     },
-    productCard: {
-      width: '45%',
-      backgroundColor: '#f9f9f9',
-      margin: 8,
-      borderRadius: 10,
-      padding: 10,
+    
+    buttonContainer: {
+        gap: 16,
     },
-    productImage: {
-      height: 120,
-      width: '100%',
-      borderRadius: 8,
+    
+    clockButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 24,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
-    productTitle: {
-      fontWeight: 'bold',
-      fontSize: 14,
-      marginVertical: 4,
+    
+    clockInButton: {
+        backgroundColor: Colors.APP_COLOR_DARK,
     },
-    productDesc: {
-      fontSize: 12,
-      color: '#555',
+    
+    clockOutButton: {
+        backgroundColor: '#dc3545',
     },
-    productPrice: {
-      fontSize: 14,
-      fontWeight: 'bold',
-      marginTop: 6,
+    
+    disabledButton: {
+        backgroundColor: '#ccc',
+        opacity: 0.6,
     },
-    oldPrice: {
-      textDecorationLine: 'line-through',
-      color: '#777',
-      fontWeight: 'normal',
+    
+    buttonText: {
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 8,
+        fontFamily: fonts.montserratSemiBold,
     },
-    discount: {
-      color: 'red',
-      fontWeight: 'bold',
+    
+    // Loading styles
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    rating: {
-      marginTop: 4,
-      fontSize: 12,
-      color: '#888',
+    
+    loadingText: {
+        fontSize: 16,
+        color: '#666',
+        fontFamily: fonts.montserratMedium,
     },
- 
-
-    cardpaddingHolder: {
-      paddingTop: 0,
-      paddingLeft: 20,
-      paddingRight: 20,
-  },
-  mainCardView: palette.view.noMargincardView,
-  parentView: palette.view.superParent,
-  cardView: palette.view.roundcardView,
-  shadowView: palette.view.shadowView,
+    
+    refreshButton: {
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+    },
 });
 
 export default styles;
