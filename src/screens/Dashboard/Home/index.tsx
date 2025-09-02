@@ -26,7 +26,12 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+       <View style={styles.parentView}>
+
+       <View style={[styles.mainCardView]}>
       
+    </View>
+       </View>
     </SafeAreaView>
   );
 };

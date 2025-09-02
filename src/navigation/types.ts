@@ -10,7 +10,8 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
     Home: undefined;
-    Tabs: undefined
+    Tabs: undefined;
+    EditProfile: undefined;
 }
 
 export type BottomTabParamList = {

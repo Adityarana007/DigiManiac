@@ -24,7 +24,6 @@ const getDeviceHeight = () => {
 
 function BackHeader(props) {
   // if ("routeParams" in props) consoleJson(props.officeObject.isActive);
-
   return (
     <SafeAreaView
       style={[
@@ -118,7 +117,7 @@ const BottomTabNavigator = () => {
             />
           );
         },
-        tabBarActiveTintColor: Colors.colorRed,
+        tabBarActiveTintColor: Colors.APP_COLOR_DARK,
         tabBarInactiveTintColor: Colors.black,
       })}>
       <Tab.Screen

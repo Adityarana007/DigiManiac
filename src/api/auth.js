@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL } from "./apiUrls";
+import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE } from "./apiUrls";
 import apiClient from "./client";
 
 export const register = async (params) => {
@@ -22,4 +22,8 @@ export const getCategories = async (params) => {
 
 export const getProfile = async (params) => {
     return await apiClient.get(GET_PROFILE)
+}
+
+export const updateProfile = async (params) => {
+    return await apiClient.put(UPDATE_PROFILE, params)
 }

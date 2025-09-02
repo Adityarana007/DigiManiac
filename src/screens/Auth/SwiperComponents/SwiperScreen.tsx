@@ -54,7 +54,7 @@ const SwiperScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor={Colors.colorRed} barStyle={'dark-content'}/>
+      <StatusBar backgroundColor={Colors.APP_COLOR_DARK} barStyle={'dark-content'}/>
       <View style={styles.countSkipView}>
         <View style={styles.countView}>
         <Text style={styles.pageCount}>{pageIndex + 1}</Text>
@@ -93,7 +93,7 @@ const SwiperScreen = () => {
           <Text
             style={[
               styles.buttonText,
-              {color: pageIndex === 0 ? Colors.grey_C4C4C4 : Colors.colorRed},
+              {color: pageIndex === 0 ? Colors.grey_C4C4C4 : Colors.APP_COLOR_DARK},
             ]}>
             Prev
           </Text>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   buttonText: {
-    color: Colors.colorRed,
+    color: Colors.APP_COLOR_DARK,
     fontFamily: fonts.montserratSemiBold,
   },
   countSkipView:{

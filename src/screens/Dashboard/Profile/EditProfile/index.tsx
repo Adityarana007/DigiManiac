@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,68 +6,94 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  TextInput,
   Platform,
 } from "react-native";
 import { launchImageLibrary, launchCamera, MediaType, PhotoQuality } from "react-native-image-picker";
-import styles from "./styles";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import images from "../../../assets/images";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../../navigation/types";
-import { Colors } from "../../../assets/colors";
-import { getProfile } from "../../../api/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
+// import styles from "./styles";
 
-const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackParamList>}) => {
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import images from "../../../../assets/images";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../../../navigation/types";
+import { Colors } from "../../../../assets/colors";
+import { getProfile, updateProfile } from "../../../../api/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from 'react-native-simple-toast';
+import styles from "./styles";
+import Loader from "../../../../components/common/Loader";
+
+const EditProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackParamList>}) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [userName, setUserName] = useState("John Doe");
-  const [userEmail, setUserEmail] = useState("john.doe@example.com");
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     props.navigation.setOptions({
-      headerTitle: () => setHeaderTitle(),
-      headerRight: () => setHeaderRight(),
+    //   headerTitle: () => setHeaderTitle(),
+    //   headerLeft: () => setHeaderLeft(),
     });
+    getProfileData();
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      getProfileApi();
-    }, [])
-  );
 
   const setHeaderTitle = () => {
     return (
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.title}>Edit Profile</Text>
     );
   }
 
-  useEffect(() => {
-    getProfileApi();
-  }, []);
+  const setHeaderLeft = () => {
+    return (
+      <TouchableOpacity onPress={onBackPress}>
+        <Text style={styles.backButton}>Cancel</Text>
+      </TouchableOpacity>
+    );
+  }
 
-  const getProfileApi = async () => {
+
+
+  const getProfileData = async () => {
     const res = await getProfile();
     console.log("res___", res);
     if(res.status === 200){
-      setUserName(res.data?.user?.name);
-      setUserEmail(res.data?.user?.email);
-    }  else {
-    //   Toast.show(res?.data?.error, Toast.LONG);
+      setUserName(res.data?.user?.name || "");
+      setUserEmail(res.data?.user?.email || "");
+      setProfileImage(res.data?.user?.profile_image || null);
     }
   }
-  
-  const setHeaderRight = () => {
-    return (
-      <TouchableOpacity onPress={() => props.navigation.getParent()?.navigate('EditProfile')}>
-        <Image
-            style={{ width: 20, height: 20, tintColor: Colors.white, marginRight: 20 }}
-            source={images.profile.icEdit}
-          />
-      </TouchableOpacity>
-    );
-  };
+
+  const onBackPress = () => {
+    props.navigation.goBack();
+  }
+
+  const onSavePress = async () => {
+    if (!userName.trim() || !userEmail.trim()) {
+      Toast.show('Please fill all fields', Toast.SHORT);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const params = {
+        name: userName.trim(),
+        email: userEmail.trim(),
+        // profile_image: profileImage
+      };
+      
+      const res = await updateProfile(params);
+      if(res.status === 200){
+        Toast.show('Profile updated successfully', Toast.SHORT);
+        props.navigation.goBack();
+      } else {
+        Toast.show(res?.data?.error || 'Update failed', Toast.SHORT);
+      }
+    } catch (error) {
+      Toast.show('Something went wrong', Toast.SHORT);
+    } finally {
+      setLoading(false);
+    }
+  }
   
   const selectImage = () => {
     Alert.alert(
@@ -121,26 +147,18 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
             } else if (response.errorCode) {
               console.log("Gallery Error: ", response.errorMessage);
             } else if (response.assets && response.assets[0]) {
-                // alert('success')
               setProfileImage(response.assets[0].uri || null);
             }
           });
     } catch (error) {
       console.log("Gallery Error: ", error);
     }
-  
   };
-
-  const onLogoutPress = async () => {
-    AsyncStorage.clear();
-    props.navigation.reset({
-      index: 0,
-      routes: [{ name: 'Root' as keyof AuthStackParamList }],
-    });
-  }
 
   return (
     <SafeAreaView style={styles.container}>
+        <Loader visible={loading} />
+
       <View style={styles.parentView}>
         <View style={[styles.mainCardView]}>
           <View
@@ -165,6 +183,7 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
                       <Image
                         source={images.common.default_user}
                         style={styles.defaultUserIcon}
+                        
                       />
                     </View>
                   )}
@@ -175,6 +194,9 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
                     />
                   </TouchableOpacity>
                 </View>
+                <TouchableOpacity style={styles.changePhotoButton} onPress={selectImage}>
+                  <Text style={styles.changePhotoText}>Change Photo</Text>
+                </TouchableOpacity>
               </View>
 
               {/* User Info Section */}
@@ -188,7 +210,13 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
                         style={styles.inputIcon}
                       />
                     </View>
-                    <Text style={styles.inputText}>{userName}</Text>
+                    <TextInput
+                      style={styles.inputText}
+                      value={userName}
+                      onChangeText={setUserName}
+                      placeholder="Enter your full name"
+                      placeholderTextColor="#999"
+                    />
                   </View>
                 </View>
 
@@ -201,15 +229,21 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
                         style={styles.inputIcon}
                       />
                     </View>
-                    <Text style={styles.inputText}>{userEmail}</Text>
+                    <TextInput
+                      style={styles.inputText}
+                      value={userEmail}
+                      onChangeText={setUserEmail}
+                      placeholder="Enter your email"
+                      placeholderTextColor="#999"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
                   </View>
                 </View>
-              </View>
-
-              {/* Logout Button */}
-              <TouchableOpacity style={styles.btnContainer} onPress={onLogoutPress}>
-                <Text style={styles.logoutText}>Log Out</Text>
+                <TouchableOpacity style={styles.btnContainer} onPress={onSavePress}>
+                <Text style={styles.logoutText}>Save</Text>
               </TouchableOpacity>
+              </View>
 
             </KeyboardAwareScrollView>
           </View>
@@ -219,4 +253,4 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
   );
 };
 
-export default ProfileScreen;
+export default EditProfileScreen;

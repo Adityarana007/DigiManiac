@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     padding: 20,
-    backgroundColor: Colors.colorRed,
+    backgroundColor: Colors.APP_COLOR_DARK,
     width: '30%',
     borderRadius: 12
   },

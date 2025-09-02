@@ -233,7 +233,7 @@ const palette = {
       textDecorationLine: 'underline',
       lineHeight: 17,
       marginLeft: 5,
-      color: Colors.colorRed,
+      color: Colors.APP_COLOR_DARK,
       alignSelf: 'center',
       flex: 3,
     },
@@ -440,7 +440,7 @@ const palette = {
     inputSelectedLabel: {
       fontFamily: fonts.montserratMedium,
       fontSize: 12,
-      color: Colors.colorRed,
+      color: Colors.APP_COLOR_DARK,
       letterSpacing: 0.23,
     },
     inputUnSelectedLabel: {

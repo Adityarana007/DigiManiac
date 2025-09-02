@@ -38,12 +38,12 @@ const styles = StyleSheet.create({
       },
       forgot: {
         alignSelf: 'flex-end',
-        color: Colors.colorRed,
+        color: Colors.APP_COLOR_DARK,
         marginBottom: 25,
         fontFamily: fonts.montserratSemiBold
       },
       loginButton: {
-        backgroundColor:Colors.colorRed,
+        backgroundColor:Colors.APP_COLOR_DARK,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',

@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
-import fonts from "../../../assets/fonts";
-import { Colors } from "../../../assets/colors";
-import palette from "../../../assets/palette";
+import fonts from "../../../../assets/fonts";
+import { Colors } from "../../../../assets/colors";
+import palette from "../../../../assets/palette";
 
 const styles = StyleSheet.create({
     // Original container and card styles
@@ -22,7 +22,22 @@ const styles = StyleSheet.create({
         paddingRight: 20,
     },
     
-    // Profile photo section (improved)
+    // Header buttons
+    backButton: {
+        color: Colors.white,
+        fontSize: 16,
+        fontFamily: fonts.montserratMedium,
+        marginLeft: 20,
+    },
+    
+    saveButton: {
+        color: Colors.white,
+        fontSize: 16,
+        fontFamily: fonts.montserratBold,
+        marginRight: 20,
+    },
+    
+    // Profile photo section (same as Profile screen)
     profilePhotoSection: {
         alignItems: 'center',
         marginBottom: 30,
@@ -57,7 +72,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f0f0f0',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 3,
+        borderWidth: 4,
         borderColor: Colors.white,
         shadowColor: '#000',
         shadowOffset: {
@@ -70,15 +85,14 @@ const styles = StyleSheet.create({
     },
     
     defaultUserIcon: {
-        // width: 60,
-        // height: 60,
+        // tintColor: '#999',
     },
     
     editPhotoButton: {
         position: 'absolute',
         bottom: 5,
         right: 5,
-        backgroundColor: '#FF6B35',
+        backgroundColor: Colors.APP_COLOR_DARK,
         width: 40,
         height: 40,
         borderRadius: 20,
@@ -108,17 +122,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255, 107, 53, 0.1)',
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: '#FF6B35',
+        borderColor: Colors.APP_COLOR_DARK,
     },
     
     changePhotoText: {
-        color: '#FF6B35',
+        color: Colors.APP_COLOR_DARK,
         fontSize: 16,
         fontWeight: '600',
         fontFamily: fonts.montserratMedium,
     },
     
-    // User info section (improved input fields)
+    // User info section (editable input fields)
     userInfoSection: {
         marginBottom: 30,
     },
@@ -129,6 +143,7 @@ const styles = StyleSheet.create({
     
     label: {
         fontSize: 16,
+        fontWeight: '600',
         color: '#333',
         marginBottom: 10,
         fontFamily: fonts.montserratMedium,
@@ -172,9 +187,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         fontFamily: fonts.montserratRegular,
+        paddingVertical: 0, // Remove default padding for TextInput
     },
-    
-    // Logout button (original)
     btnContainer: {
         backgroundColor: Colors.APP_COLOR_DARK,
         paddingVertical: 15,

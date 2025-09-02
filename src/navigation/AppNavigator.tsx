@@ -2,13 +2,21 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {AppStackParamList} from './types';
 import BottomTabNavigator from './BottomTabNavigator';
 import { TransitionPresets } from '@react-navigation/bottom-tabs';
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/colors';
 import fonts from '../assets/fonts';
 import { getHitSlop } from '../utils/helpers';
 import images from '../assets/images';
-const HeaderHeight = 40;
+import EditProfileScreen from '../screens/Dashboard/Profile/EditProfile';
 
+const HeaderHeight = 40;
+const getDeviceHeight = () => {
+  if (Platform.OS == 'android') {
+    return HeaderHeight
+  } else {
+    return undefined
+  }
+};
 const Stack = createNativeStackNavigator<AppStackParamList>();
 function BackHeader(props) {
   // if ("routeParams" in props) consoleJson(props.officeObject.isActive);
@@ -61,8 +69,8 @@ function BackHeader(props) {
             style={{
               textAlign: 'center',
               fontSize: 18,
-              fontFamily: fonts.montserratSemiBold,
-              color: Colors.black,
+              fontFamily: fonts.montserratBold,
+              color: Colors.white,
               paddingRight: 10,
               flex: 1,
             }}>
@@ -83,6 +91,38 @@ const AppNavigator = () => {
         options={{
           headerShown: false
         }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={() => ({
+        //   headerStyle:
+        //   Platform.OS === 'android'
+        //     ? {
+        //       backgroundColor: Colors.APP_COLOR_DARK,
+        //       shadowColor: 'transparent',
+        //       elevation: 0, // remove shadow on Android
+        //       shadowOpacity: 0,
+        //       height: HeaderHeight,
+        //     }
+        //     : {
+        //       backgroundColor: Colors.APP_COLOR_DARK,
+        //       shadowColor: 'transparent',
+        //       elevation: 0, // remove shadow on Android
+        //       shadowOpacity: 0,
+        //       height: getDeviceHeight(),
+        //     },
+
+        // headerTintColor: Colors.white,
+        // headerTitleAlign: 'center',
+        header: props => (
+          <BackHeader
+              title={'Edit Profile'}
+              icon1={images.common.back}
+              {...props}
+          />
+      ),
+        })}
       />
     </Stack.Navigator>
   );

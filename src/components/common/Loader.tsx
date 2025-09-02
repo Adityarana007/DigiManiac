@@ -11,7 +11,7 @@ const Loader = ({ visible = false }) => {
     >
       <View style={styles.overlay}>
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={Colors.colorRed} />
+          <ActivityIndicator size="large" color={Colors.APP_COLOR_DARK} />
         </View>
       </View>
     </Modal>

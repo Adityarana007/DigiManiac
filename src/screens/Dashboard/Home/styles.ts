@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 import fonts from "../../../assets/fonts";
 import { Colors } from "../../../assets/colors";
+import palette from "../../../assets/palette";
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#fff' },
@@ -153,6 +154,17 @@ const styles = StyleSheet.create({
       fontSize: 12,
       color: '#888',
     },
+ 
+
+    cardpaddingHolder: {
+      paddingTop: 0,
+      paddingLeft: 20,
+      paddingRight: 20,
+  },
+  mainCardView: palette.view.noMargincardView,
+  parentView: palette.view.superParent,
+  cardView: palette.view.roundcardView,
+  shadowView: palette.view.shadowView,
 });
 
 export default styles;

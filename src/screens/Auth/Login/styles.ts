@@ -39,12 +39,12 @@ const styles = StyleSheet.create({
       },
       forgot: {
         // alignSelf: 'flex-end',
-        color: Colors.colorRed,
+        color: Colors.APP_COLOR_DARK,
         fontFamily: fonts.montserratSemiBold,
 
       },
       loginButton: {
-        backgroundColor:Colors.colorRed,
+        backgroundColor:Colors.APP_COLOR_DARK,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: 'center',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 30,
         borderWidth: 1,
-        borderColor: Colors.colorRed,
+        borderColor: Colors.APP_COLOR_DARK,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#FCF3F6'
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
       },
       signUp: {
-        color: Colors.colorRed,
+        color: Colors.APP_COLOR_DARK,
         fontFamily: fonts.montserratSemiBold,
         marginLeft: 6
       },

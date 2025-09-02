@@ -7,7 +7,7 @@ import fonts from '../../../assets/fonts';
 const SwiperFirst = () => {
   return (
     <>
-    <StatusBar backgroundColor={Colors.colorRed} barStyle={'dark-content'}/>
+    <StatusBar backgroundColor={Colors.APP_COLOR_DARK} barStyle={'dark-content'}/>
     <View style={styles.container}>
       <Image
         style={{marginRight: 10, height: 200, width: 200}}
