@@ -87,91 +87,88 @@ function BackHeader(props) {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
-      screenOptions={({route}) => ({
-        tabBarIcon: ({color, size}) => {
-          let iconName: string;
-
-          switch (route.name) {
-            case 'Home':
-              iconName = 'home-outline'; // Ionicons
-              break;
-            case 'Profile':
-              iconName = 'person-outline'; // Ionicons
-              break;
-            case 'Settings':
-              iconName = 'settings-outline'; // Ionicons
-              break;
-            case 'Wishlist':
-              iconName = 'heart-outline'; // Ionicons
-              break;
-            default:
-              iconName = 'ellipse-outline';
-          }
-
-          return (
-            <VectorIcon
-              type={IconsType.Ionicons}
-              name={iconName}
-              color={color}
-              size={size}
-            />
-          );
-        },
-        tabBarActiveTintColor: Colors.APP_COLOR_DARK,
-        tabBarInactiveTintColor: Colors.black,
-      })}>
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        // options={{headerShown: false}}
-        options={() => ({
-          header: props => (
-            <BackHeader
-              title={'Home'}
-              // icon1={images.common.back}
-              {...props}
-            />
-          ),
-        })}
-      />
-      <Tab.Screen
-        name="Wishlist"
-        component={WishlistScreen}
-        options={{headerShown: false}}
-      />
-    
-      <Tab.Screen
-        name="Settings"
-        component={SettingScreen}
-        options={{headerShown: false}}
-      />
-        <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        // options={{headerShown: false}}
-        options={() => ({
-          headerStyle:
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size, focused }) => {
+        let iconName: string;
+  
+        switch (route.name) {
+          case 'Home':
+            iconName = focused ? 'home-sharp' : 'home-outline'; // active vs inactive
+            break;
+          case 'Profile':
+            iconName = focused ? 'person-sharp' : 'person-outline'; 
+            break;
+          case 'Settings':
+            iconName = focused ? 'settings-sharp' : 'settings-outline'; 
+            break;
+          case 'Wishlist':
+            iconName = 'heart-outline'; 
+            break;
+          default:
+            iconName = 'ellipse-outline';
+        }
+  
+        return (
+          <VectorIcon
+            type={IconsType.Ionicons}
+            name={iconName}
+            color={color}
+            size={size}
+          />
+        );
+      },
+      tabBarActiveTintColor: Colors.APP_COLOR_DARK,
+      tabBarInactiveTintColor: Colors.black,
+    })}
+  >
+    <Tab.Screen
+      name="Home"
+      component={HomeScreen}
+      options={() => ({
+        header: props => (
+          <BackHeader
+            title={'Home'}
+            {...props}
+          />
+        ),
+      })}
+    />
+    <Tab.Screen
+      name="Wishlist"
+      component={WishlistScreen}
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name="Settings"
+      component={SettingScreen}
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={ProfileScreen}
+      options={() => ({
+        headerStyle:
           Platform.OS === 'android'
             ? {
-              backgroundColor: Colors.APP_COLOR_DARK,
-              shadowColor: 'transparent',
-              elevation: 0, // remove shadow on Android
-              shadowOpacity: 0,
-              height: HeaderHeight,
-            }
+                backgroundColor: Colors.APP_COLOR_DARK,
+                shadowColor: 'transparent',
+                elevation: 0,
+                shadowOpacity: 0,
+                height: HeaderHeight,
+              }
             : {
-              backgroundColor: Colors.APP_COLOR_DARK,
-              shadowColor: 'transparent',
-              elevation: 0, // remove shadow on Android
-              shadowOpacity: 0,
-              height: getDeviceHeight(),
-            },
-
+                backgroundColor: Colors.APP_COLOR_DARK,
+                shadowColor: 'transparent',
+                elevation: 0,
+                shadowOpacity: 0,
+                height: getDeviceHeight(),
+              },
         headerTintColor: Colors.white,
         headerTitleAlign: 'center',
-        })}
-      />
-    </Tab.Navigator>
+      })}
+    />
+  </Tab.Navigator>
+  
   );
 };
 

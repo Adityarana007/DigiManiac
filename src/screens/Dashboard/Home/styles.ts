@@ -23,171 +23,98 @@ const styles = StyleSheet.create({
     },
     
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: 20,
     },
     
     title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: Colors.APP_COLOR_DARK,
-        textAlign: 'center',
-        flex: 1,
-        fontFamily: fonts.montserratBold,
-    },
-    
-    subtitle: {
         fontSize: 16,
-        color: '#666',
-        textAlign: 'center',
-        fontFamily: fonts.montserratRegular,
-        position: 'absolute',
-        top: 35,
-        left: 0,
-        right: 0,
+        // fontWeight: '600',
+        color: Colors.grey_A0A0A1,
+        // textAlign: 'center',
+        fontFamily: fonts.montserratSemiBold,
+        letterSpacing: 0.5,
     },
     
-    statusCard: {
-        backgroundColor: Colors.white,
+    // Main Unified Card
+    mainCard: {
+        backgroundColor: '#2C3E50',
         borderRadius: 16,
-        padding: 24,
-        alignItems: 'center',
-        marginBottom: 24,
+        padding: 20,
+        marginBottom: 20,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 4,
         },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.15,
         shadowRadius: 8,
         elevation: 5,
     },
     
-    statusIcon: {
-        marginBottom: 16,
+    // Top Section - Day and Date
+    topSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
     },
     
-    statusText: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 8,
-        fontFamily: fonts.montserratSemiBold,
+    dateInfo: {
+        flex: 1,
     },
     
-    clockInTime: {
-        fontSize: 14,
-        color: '#666',
+    currentDay: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: Colors.white,
+        fontFamily: fonts.montserratBold,
         marginBottom: 4,
+    },
+    
+    currentDate: {
+        fontSize: 16,
+        color: '#BDC3C7',
         fontFamily: fonts.montserratMedium,
     },
     
-    clockInDate: {
-        fontSize: 12,
-        color: '#999',
-        marginBottom: 8,
-        fontFamily: fonts.montserratRegular,
+    shiftProgress: {
+        alignItems: 'flex-end',
     },
     
-    notesText: {
-        fontSize: 12,
-        color: '#666',
-        fontStyle: 'italic',
-        fontFamily: fonts.montserratRegular,
+    progressText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#E67E22',
+        fontFamily: fonts.montserratBold,
     },
     
-    timerContainer: {
-        backgroundColor: Colors.APP_COLOR_DARK,
-        borderRadius: 16,
-        padding: 20,
+    // Middle Section - Current Time
+    timeSection: {
         alignItems: 'center',
-        marginBottom: 24,
+        marginBottom: 20,
+        paddingVertical: 10,
     },
     
-    timerLabel: {
-        fontSize: 14,
-        color: Colors.white,
-        marginBottom: 8,
-        fontFamily: fonts.montserratMedium,
-    },
-    
-    timerContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    
-    timeUnit: {
-        alignItems: 'center',
-        marginHorizontal: 8,
-    },
-    
-    timeValue: {
+    currentTime: {
         fontSize: 32,
         fontWeight: 'bold',
         color: Colors.white,
         fontFamily: fonts.montserratBold,
     },
     
-    timeLabel: {
-        fontSize: 12,
-        color: Colors.white,
-        fontFamily: fonts.montserratMedium,
-        marginTop: 2,
-    },
-    
-    timeSeparator: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: Colors.white,
-        fontFamily: fonts.montserratBold,
-        marginHorizontal: 4,
-    },
-    
-    timer: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: Colors.white,
-        fontFamily: fonts.montserratBold,
-    },
-    
-    durationContainer: {
-        backgroundColor: '#f8f9fa',
-        borderRadius: 16,
-        padding: 20,
+    // Bottom Section - Action and Info
+    actionSection: {
         alignItems: 'center',
-        marginBottom: 24,
-        borderWidth: 1,
-        borderColor: '#e1e5e9',
     },
     
-    durationLabel: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 8,
-        fontFamily: fonts.montserratMedium,
-    },
-    
-    duration: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: Colors.APP_COLOR_DARK,
-        fontFamily: fonts.montserratBold,
-    },
-    
-    buttonContainer: {
-        gap: 16,
-    },
-    
-    clockButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+    actionButton: {
+        width: '100%',
         paddingVertical: 16,
         paddingHorizontal: 24,
         borderRadius: 12,
+        alignItems: 'center',
+        marginBottom: 16,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -199,24 +126,50 @@ const styles = StyleSheet.create({
     },
     
     clockInButton: {
-        backgroundColor: Colors.APP_COLOR_DARK,
+        backgroundColor: '#27AE60',
     },
     
     clockOutButton: {
-        backgroundColor: '#dc3545',
+        backgroundColor: '#E74C3C',
     },
     
-    disabledButton: {
-        backgroundColor: '#ccc',
-        opacity: 0.6,
-    },
-    
-    buttonText: {
+    actionButtonText: {
         color: Colors.white,
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontFamily: fonts.montserratBold,
+    },
+    
+    // Session Information
+    sessionInfo: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    
+    clockInTimeDisplay: {
+        fontSize: 14,
+        color: '#2ECC71',
+        fontFamily: fonts.montserratMedium,
+        marginBottom: 8,
+    },
+    
+    sessionDuration: {
         fontSize: 16,
+        color: '#BDC3C7',
+        fontFamily: fonts.montserratMedium,
+    },
+    
+    // Daily Progress
+    dailyProgress: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    
+    dailyProgressText: {
+        fontSize: 16,
+        color: '#E67E22',
+        fontFamily: fonts.montserratMedium,
         fontWeight: '600',
-        marginLeft: 8,
-        fontFamily: fonts.montserratSemiBold,
     },
     
     // Loading styles

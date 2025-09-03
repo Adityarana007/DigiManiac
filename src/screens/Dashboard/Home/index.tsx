@@ -23,6 +23,8 @@ import { IconsType } from '../../../utils/constants';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../../../components/common/Loader';
+import { Spacer } from '../../../components/common/Spacer';
+import DeviceInfo from 'react-native-device-info';
 
 type Category= {
   name: string;
@@ -110,8 +112,10 @@ const HomeScreen = () => {
       if (response.status === 200 && response.data?.success) {
         const isClockedIn = response.data?.isClockedIn;
         const currentSession = response.data?.currentSession;
+        const todaySummary = response.data?.todaySummary;
         console.log('Is clocked in:', isClockedIn);
         console.log('Current session:', currentSession);
+        console.log('Today summary:', todaySummary);
         
         if (isClockedIn && currentSession) {
           console.log('Setting clocked in state');
@@ -133,6 +137,15 @@ const HomeScreen = () => {
           setIsClockedIn(false);
           setTimeEntry(null);
           setClockInTime(null);
+        }
+        
+        // Update daily logged hours from todaySummary
+        if (todaySummary) {
+          const totalHours = todaySummary.totalTimeToday;
+          const hours = Math.floor(totalHours);
+          const minutes = Math.round((totalHours - hours) * 60);
+          const formattedHours = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+          setDailyLoggedHours(formattedHours);
         }
       } else {
         console.log('No active time entry found');
@@ -175,17 +188,22 @@ const HomeScreen = () => {
     const diffMs = now.getTime() - start.getTime();
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
     
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const addToDailyHours = (sessionDuration: string) => {
-    const [sessionHours, sessionMinutes] = sessionDuration.split(':').map(Number);
+    const [sessionHours, sessionMinutes, sessionSeconds] = sessionDuration.split(':').map(Number);
     const [dailyHours, dailyMinutes] = dailyLoggedHours.split(':').map(Number);
     
-    let totalMinutes = (dailyHours + sessionHours) * 60 + dailyMinutes + sessionMinutes;
-    const newHours = Math.floor(totalMinutes / 60);
-    const newMinutes = totalMinutes % 60;
+    // Convert everything to seconds for accurate calculation
+    const sessionTotalSeconds = (sessionHours * 3600) + (sessionMinutes * 60) + (sessionSeconds || 0);
+    const dailyTotalSeconds = (dailyHours * 3600) + (dailyMinutes * 60);
+    const totalSeconds = sessionTotalSeconds + dailyTotalSeconds;
+    
+    const newHours = Math.floor(totalSeconds / 3600);
+    const newMinutes = Math.floor((totalSeconds % 3600) / 60);
     
     const newDailyHours = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
     setDailyLoggedHours(newDailyHours);
@@ -200,10 +218,9 @@ const HomeScreen = () => {
         location: {
           latitude: 40.7128,
           longitude: -74.0060,
-          address: 'Office Building, New York'
         },
         deviceInfo: {
-          deviceId: 'mobile-123'
+          deviceId: await DeviceInfo.getUniqueId(),
         }
       }
       const response = await clockIn(params);
@@ -314,128 +331,93 @@ const HomeScreen = () => {
           <View style={styles.clockContainer}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>Time Tracking</Text>
-              <Text style={styles.subtitle}>Track your work hours</Text>
-              <TouchableOpacity 
-                style={styles.refreshButton} 
-                onPress={fetchTimeStatus}
-              >
-                <VectorIcon
-                  type={IconsType.Ionicons}
-                  name="refresh"
-                  size={20}
-                  color={Colors.APP_COLOR_DARK}
-                />
-              </TouchableOpacity>
+              {/* <Text style={styles.title}>SHIFT TODAY : FLEXIBLE TIMINGS</Text> */}
             </View>
 
-            {/* Status Card - Only show when clocked in */}
-            {isClockedIn && (
-              <View style={styles.statusCard}>
-                <View style={styles.statusIcon}>
-                  <VectorIcon
-                    type={IconsType.Ionicons}
-                    name="time"
-                    size={40}
-                    color={Colors.APP_COLOR_DARK}
-                  />
+            {/* Main Card - Combined Day/Date and Clock In/Out */}
+            <View style={styles.mainCard}>
+              {/* Top Section - Day and Date */}
+              <View style={styles.topSection}>
+                <View style={styles.dateInfo}>
+              <Text style={styles.title}>SHIFT TODAY</Text>
+              <Spacer margin={5} />
+                  <Text style={styles.currentDay}>
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long' })}
+                  </Text>
+                  <Text style={styles.currentDate}>
+                    {new Date().toLocaleDateString('en-US', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </Text>
                 </View>
-                
-                <Text style={styles.statusText}>
-                  Currently Working
+                <View style={styles.shiftProgress}>
+                  <Text style={styles.progressText}>
+                    {(() => {
+                      const totalHours = parseFloat(dailyLoggedHours.split(':')[0]) + parseFloat(dailyLoggedHours.split(':')[1]) / 60;
+                      if (totalHours >= 1) {
+                        const hours = Math.floor(totalHours);
+                        const minutes = Math.round((totalHours - hours) * 60);
+                        return `${hours}h ${minutes}m / 9h`;
+                      } else {
+                        return `${Math.floor(parseFloat(dailyLoggedHours.split(':')[1]))}m / 9h`;
+                      }
+                    })()}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Middle Section - Current Time */}
+              {/* <View style={styles.timeSection}>
+                <Text style={styles.currentTime}>
+                  {formatTime(currentTime)}
                 </Text>
-                
-                {timeEntry && (
-                  <>
-                    <Text style={styles.clockInTime}>
-                      Clocked in at {formatTime(new Date(timeEntry.clockIn))}
+              </View> */}
+
+              {/* Bottom Section - Clock In/Out and Session Info */}
+              <View style={styles.actionSection}>
+                {/* Clock In/Out Button */}
+                <TouchableOpacity
+                  style={[
+                    styles.actionButton,
+                    isClockedIn ? styles.clockOutButton : styles.clockInButton
+                  ]}
+                  onPress={isClockedIn ? handleClockOut : handleClockIn}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.actionButtonText}>
+                    {isLoading ? 'Processing...' : (isClockedIn ? 'Clock Out' : 'Clock In')}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Session Information */}
+                {isClockedIn && timeEntry && (
+                  <View style={styles.sessionInfo}>
+                    <Text style={styles.clockInTimeDisplay}>
+                      ✓ Clocked in at {formatTime(new Date(timeEntry.clockIn))}
                     </Text>
-                    <Text style={styles.clockInDate}>
-                      {formatDate(timeEntry.clockIn)}
+                    <Text style={styles.sessionDuration}>
+                      Session: {getCurrentDuration()}
                     </Text>
-                    {timeEntry.notes && (
-                      <Text style={styles.notesText}>
-                        Notes: {timeEntry.notes}
-                      </Text>
-                    )}
-                  </>
+                  </View>
+                )}
+
+                {/* Daily Progress - Show when not clocked in */}
+                {!isClockedIn && dailyLoggedHours !== '00:00' && (
+                  <View style={styles.dailyProgress}>
+                    <Text style={styles.dailyProgressText}>
+                      Today's Total: {dailyLoggedHours}
+                    </Text>
+                  </View>
                 )}
               </View>
-            )}
-
-            {/* Timer Display - Only show when clocked in */}
-            {isClockedIn && (
-              <View style={styles.timerContainer}>
-                <Text style={styles.timerLabel}>Current Session</Text>
-                <View style={styles.timerContent}>
-                  <View style={styles.timeUnit}>
-                    <Text style={styles.timeValue}>{getCurrentDuration().split(':')[0]}</Text>
-                    <Text style={styles.timeLabel}>Hrs</Text>
-                  </View>
-                  <Text style={styles.timeSeparator}>:</Text>
-                  <View style={styles.timeUnit}>
-                    <Text style={styles.timeValue}>{getCurrentDuration().split(':')[1]}</Text>
-                    <Text style={styles.timeLabel}>Mins</Text>
-                  </View>
-                </View>
-              </View>
-            )}
-
-            {/* Daily Logged Hours - Show when not clocked in */}
-            {!isClockedIn && dailyLoggedHours !== '00:00' && (
-              <View style={styles.durationContainer}>
-                <Text style={styles.durationLabel}>Today's Total Hours</Text>
-                <Text style={styles.duration}>{dailyLoggedHours}</Text>
-              </View>
-            )}
-
-            {/* Action Buttons */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.clockButton,
-                  styles.clockInButton,
-                  isClockedIn && styles.disabledButton
-                ]}
-                onPress={handleClockIn}
-                disabled={isClockedIn || isLoading}
-              >
-                <VectorIcon
-                  type={IconsType.Ionicons}
-                  name="play"
-                  size={24}
-                  color={Colors.white}
-                />
-                <Text style={styles.buttonText}>
-                  {isLoading ? 'Processing...' : 'Clock In'}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.clockButton,
-                  styles.clockOutButton,
-                  !isClockedIn && styles.disabledButton
-                ]}
-                onPress={handleClockOut}
-                disabled={!isClockedIn || isLoading}
-              >
-                <VectorIcon
-                  type={IconsType.Ionicons}
-                  name="stop"
-                  size={24}
-                  color={Colors.white}
-                />
-                <Text style={styles.buttonText}>
-                  {isLoading ? 'Processing...' : 'Clock Out'}
-                </Text>
-              </TouchableOpacity>
             </View>
+
           </View>
         </View>
       </View>
       <Loader visible={isLoading} />
-
     </SafeAreaView>
   );
 };
