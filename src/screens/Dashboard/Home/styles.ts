@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     clockContainer: {
         flex: 1,
         padding: 20,
+        paddingTop: 0,
     },
     
     header: {
@@ -189,6 +190,57 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 20,
         backgroundColor: 'rgba(255, 107, 53, 0.1)',
+    },
+    
+    // Quick Actions Section
+    quickActionsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        backgroundColor: Colors.white,
+        marginHorizontal: 15,
+        marginTop: 15,
+        marginBottom: 15,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    
+    quickActionButton: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    
+    quickActionIconContainer: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: Colors.APP_COLOR_DARK,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: Colors.white,
+    },
+    
+    quickActionTitle: {
+        fontSize: 14,
+        fontFamily: fonts.montserratMedium,
+        color: Colors.APP_COLOR_DARK,
+        marginBottom: 2,
+    },
+    
+    quickActionSubtitle: {
+        fontSize: 14,
+        fontFamily: fonts.montserratMedium,
+        color: Colors.APP_COLOR_DARK,
     },
 });
 

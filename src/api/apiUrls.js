@@ -12,3 +12,4 @@ export const UPDATE_PROFILE = 'api/updateProfile';
 export const CLOCK_IN = 'api/time/clock-in';
 export const CLOCK_OUT = 'api/time/clock-out';
 export const TIME_STATUS = 'api/time/status';
+export const TIME_ENTRIES = 'api/time/entries';

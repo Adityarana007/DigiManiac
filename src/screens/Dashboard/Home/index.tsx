@@ -328,6 +328,66 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.parentView}>
         <View style={[styles.mainCardView]}>
+          {/* Quick Actions Section */}
+          <View style={styles.quickActionsContainer}>
+            <TouchableOpacity 
+              style={styles.quickActionButton} 
+              onPress={() => {
+                // TODO: Navigate to Apply Leave screen
+                console.log('Apply Leave pressed');
+              }}
+            >
+              <View style={styles.quickActionIconContainer}>
+                <VectorIcon
+                  type={IconsType.Ionicons}
+                  name="airplane-outline"
+                  color={Colors.white}
+                  size={24}
+                />
+              </View>
+              <Text style={styles.quickActionTitle}>Apply</Text>
+              <Text style={styles.quickActionSubtitle}>Leave</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.quickActionButton} 
+              onPress={() => {
+                // TODO: Navigate to Apply WFH screen
+                console.log('Apply WFH pressed');
+              }}
+            >
+              <View style={styles.quickActionIconContainer}>
+                <VectorIcon
+                  type={IconsType.Ionicons}
+                  name="home-outline"
+                  color={Colors.white}
+                  size={24}
+                />
+              </View>
+              <Text style={styles.quickActionTitle}>Apply</Text>
+              <Text style={styles.quickActionSubtitle}>WFH</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.quickActionButton} 
+              onPress={() => {
+                // TODO: Navigate to Leave Balance screen
+                console.log('Leave Balance pressed');
+              }}
+            >
+              <View style={styles.quickActionIconContainer}>
+                <VectorIcon
+                  type={IconsType.Ionicons}
+                  name="list-outline"
+                  color={Colors.white}
+                  size={24}
+                />
+              </View>
+              <Text style={styles.quickActionTitle}>Leave</Text>
+              <Text style={styles.quickActionSubtitle}>Balance</Text>
+            </TouchableOpacity>
+          </View>
+          
           <View style={styles.clockContainer}>
             {/* Header */}
             <View style={styles.header}>

@@ -4,7 +4,7 @@ import VectorIcon from '../utils/VectorIcon';
 import {IconsType} from '../utils/constants';
 import {Colors} from '../assets/colors';
 import SettingScreen from '../screens/Dashboard/SettingScreen';
-import WishlistScreen from '../screens/Dashboard/WishlistScreen';
+import LogsScreen from '../screens/Dashboard/LogsScreen';
 import HomeScreen from '../screens/Dashboard/Home';
 import { Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { getHitSlop } from '../utils/helpers';
@@ -22,7 +22,7 @@ const getDeviceHeight = () => {
   }
 };
 
-function BackHeader(props) {
+function BackHeader(props: any) {
   // if ("routeParams" in props) consoleJson(props.officeObject.isActive);
   return (
     <SafeAreaView
@@ -101,8 +101,8 @@ const BottomTabNavigator = () => {
           case 'Settings':
             iconName = focused ? 'settings-sharp' : 'settings-outline'; 
             break;
-          case 'Wishlist':
-            iconName = 'heart-outline'; 
+          case 'Logs':
+            iconName = focused ? 'time-sharp' : 'time-outline'; 
             break;
           default:
             iconName = 'ellipse-outline';
@@ -134,15 +134,22 @@ const BottomTabNavigator = () => {
       })}
     />
     <Tab.Screen
-      name="Wishlist"
-      component={WishlistScreen}
-      options={{ headerShown: false }}
+      name="Logs"
+      component={LogsScreen}
+      options={() => ({
+        header: props => (
+          <BackHeader
+            title={'Shift Logs'}
+            {...props}
+          />
+        ),
+      })}
     />
-    <Tab.Screen
+    {/* <Tab.Screen
       name="Settings"
       component={SettingScreen}
       options={{ headerShown: false }}
-    />
+    /> */}
     <Tab.Screen
       name="Profile"
       component={ProfileScreen}

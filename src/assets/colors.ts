@@ -1,7 +1,7 @@
 export const Colors = {
     lightGrey: '#e9edf2',
-    // APP_COLOR_DARK: '#FF9b00',
-    APP_COLOR_DARK: '#2C3E50',
+    APP_COLOR_DARK: '#FF9b00',
+    // APP_COLOR_DARK: '#2C3E50',
     black: '#000000',
     white: '#ffffff',
     grey_A8A8A9: '#A8A8A9',
