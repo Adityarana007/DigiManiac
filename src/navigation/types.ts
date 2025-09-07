@@ -11,6 +11,7 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
     Home: undefined;
     Tabs: undefined;
+    Drawer: undefined;
     EditProfile: undefined;
 }
 
@@ -20,3 +21,7 @@ export type BottomTabParamList = {
     Settings: undefined;
     Logs: undefined;
   };
+
+export type DrawerParamList = {
+    MainTabs: undefined;
+};

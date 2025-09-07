@@ -15,7 +15,16 @@ const styles = StyleSheet.create({
         fontSize: 20,
         textAlign: 'center'
     },
-    container: { flex: 1, backgroundColor: '#fff' },
+    container: { 
+        flex: 1, 
+        backgroundColor: '#f8f9fa' 
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 30,
+    },
     cardpaddingHolder: {
         paddingTop: 0,
         paddingLeft: 20,
@@ -26,7 +35,8 @@ const styles = StyleSheet.create({
     profilePhotoSection: {
         alignItems: 'center',
         marginBottom: 30,
-        marginTop: 20,
+        marginTop: 30,
+        paddingHorizontal: 20,
     },
     
     profilePhotoContainer: {
@@ -35,38 +45,38 @@ const styles = StyleSheet.create({
     },
     
     profilePhoto: {
-        width: 140,
-        height: 140,
-        borderRadius: 70,
+        width: 120,
+        height: 120,
+        borderRadius: 60,
         borderWidth: 4,
         borderColor: Colors.white,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 6,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 8,
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 10,
     },
     
     defaultProfilePhoto: {
-        width: 140,
-        height: 140,
-        borderRadius: 70,
-        backgroundColor: '#f0f0f0',
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#e9ecef',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 3,
+        borderWidth: 4,
         borderColor: Colors.white,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 6,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 8,
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 10,
     },
     
     defaultUserIcon: {
@@ -118,75 +128,74 @@ const styles = StyleSheet.create({
         fontFamily: fonts.montserratMedium,
     },
     
-    // User info section (improved input fields)
+    // User info section (improved design)
     userInfoSection: {
         marginBottom: 30,
+        paddingHorizontal: 20,
     },
     
-    inputContainer: {
-        marginBottom: 20,
-    },
-    
-    label: {
-        fontSize: 16,
-        color: '#333',
-        marginBottom: 10,
-        fontFamily: fonts.montserratMedium,
-    },
-    
-    inputWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#e1e5e9',
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        backgroundColor: '#f8f9fa',
+    infoCard: {
+        backgroundColor: Colors.white,
+        borderRadius: 16,
+        padding: 20,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 1,
+            height: 2,
         },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 2,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
     
-    inputIconContainer: {
-        marginRight: 12,
-        width: 24,
-        height: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
+    infoItem: {
+        marginBottom: 20,
+        paddingBottom: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
     },
     
-    inputIcon: {
-        width: 20,
-        height: 20,
-        tintColor: '#666',
+    infoLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 8,
+        fontFamily: fonts.montserratMedium,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     
-    inputText: {
-        flex: 1,
-        fontSize: 16,
+    infoValue: {
+        fontSize: 18,
         color: '#333',
-        fontFamily: fonts.montserratRegular,
+        fontFamily: fonts.montserratSemiBold,
+        lineHeight: 24,
     },
     
-    // Logout button (original)
+    // Logout button (improved)
     btnContainer: {
         backgroundColor: Colors.APP_COLOR_DARK,
-        paddingVertical: 15,
-        borderRadius: 8,
+        paddingVertical: 16,
+        borderRadius: 12,
         alignItems: 'center',
         marginTop: 20,
+        marginHorizontal: 20,
+        shadowColor: Colors.APP_COLOR_DARK,
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
     },
     
     logoutText: {
         color: Colors.white,
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
+        fontFamily: fonts.montserratSemiBold,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
 });
 

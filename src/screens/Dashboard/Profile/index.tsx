@@ -7,10 +7,10 @@ import {
   Image,
   Alert,
   Platform,
+  ScrollView,
 } from "react-native";
 import { launchImageLibrary, launchCamera, MediaType, PhotoQuality } from "react-native-image-picker";
 import styles from "./styles";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import images from "../../../assets/images";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "../../../navigation/types";
@@ -18,11 +18,15 @@ import { Colors } from "../../../assets/colors";
 import { getProfile } from "../../../api/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
+import { useSession } from "../../../context/SessionContext";
+import { navigateToLogin } from "../../../utils/navigationService";
 
 const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackParamList>}) => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [userName, setUserName] = useState("John Doe");
   const [userEmail, setUserEmail] = useState("john.doe@example.com");
+  const [userDesignation, setUserDesignation] = useState("Software Developer");
+  const { showSessionExpiredModal } = useSession();
 
   useEffect(() => {
     props.navigation.setOptions({
@@ -48,13 +52,21 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
   }, []);
 
   const getProfileApi = async () => {
-    const res = await getProfile();
-    console.log("res___", res);
-    if(res.status === 200){
-      setUserName(res.data?.user?.name);
-      setUserEmail(res.data?.user?.email);
-    }  else {
-    //   Toast.show(res?.data?.error, Toast.LONG);
+    try {
+      const res = await getProfile();
+      console.log("res___", res);
+      if(res.status === 200){
+        setUserName(res.data?.user?.name);
+        setUserEmail(res.data?.user?.email);
+        setUserDesignation(res.data?.user?.designation || "Software Developer");
+      } else if (res.status === 401) {
+        // Token expired - modal will be shown automatically by API client
+        console.log("Token expired in Profile screen");
+      } else {
+        //   Toast.show(res?.data?.error, Toast.LONG);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
     }
   }
   
@@ -132,89 +144,63 @@ const ProfileScreen = (props: {navigation: NativeStackNavigationProp<AuthStackPa
   };
 
   const onLogoutPress = async () => {
-    AsyncStorage.clear();
-    props.navigation.reset({
-      index: 0,
-      routes: [{ name: 'Root' as keyof AuthStackParamList }],
-    });
+    try {
+      await AsyncStorage.clear();
+      navigateToLogin();
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.parentView}>
-        <View style={[styles.mainCardView]}>
-          <View
-            style={[
-              styles.cardView,
-              styles.cardpaddingHolder,
-              styles.shadowView,
-              { marginTop: 25, paddingBottom: 10, paddingTop: 10 },
-            ]}>
-            <KeyboardAwareScrollView
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ flexGrow: 1 }}>
-              
-              {/* Profile Photo Section */}
-              <View style={styles.profilePhotoSection}>
-                <View style={styles.profilePhotoContainer}>
-                  {profileImage ? (
-                    <Image source={{ uri: profileImage }} style={styles.profilePhoto} />
-                  ) : (
-                    <View style={styles.defaultProfilePhoto}>
-                      <Image
-                        source={images.common.default_user}
-                        style={styles.defaultUserIcon}
-                      />
-                    </View>
-                  )}
-                  <TouchableOpacity style={styles.editPhotoButton} onPress={selectImage}>
-                    <Image
-                      source={images.profile.icEdit}
-                      style={styles.cameraIcon}
-                    />
-                  </TouchableOpacity>
-                </View>
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}>
+        
+        {/* Profile Photo Section */}
+        <View style={styles.profilePhotoSection}>
+          <View style={styles.profilePhotoContainer}>
+            {profileImage ? (
+              <Image source={{ uri: profileImage }} style={styles.profilePhoto} />
+            ) : (
+              <View style={styles.defaultProfilePhoto}>
+                <Image
+                  source={images.common.default_user}
+                  style={styles.defaultUserIcon}
+                />
               </View>
-
-              {/* User Info Section */}
-              <View style={styles.userInfoSection}>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Full Name</Text>
-                  <View style={styles.inputWrapper}>
-                    <View style={styles.inputIconContainer}>
-                      <Image
-                        source={images.profile.icEdit}
-                        style={styles.inputIcon}
-                      />
-                    </View>
-                    <Text style={styles.inputText}>{userName}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Email Address</Text>
-                  <View style={styles.inputWrapper}>
-                    <View style={styles.inputIconContainer}>
-                      <Image
-                        source={images.profile.icEdit}
-                        style={styles.inputIcon}
-                      />
-                    </View>
-                    <Text style={styles.inputText}>{userEmail}</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Logout Button */}
-              <TouchableOpacity style={styles.btnContainer} onPress={onLogoutPress}>
-                <Text style={styles.logoutText}>Log Out</Text>
-              </TouchableOpacity>
-
-            </KeyboardAwareScrollView>
+            )}
           </View>
         </View>
-      </View>
+
+        {/* User Info Section */}
+        <View style={styles.userInfoSection}>
+          <View style={styles.infoCard}>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Full Name</Text>
+              <Text style={styles.infoValue}>{userName}</Text>
+            </View>
+
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Email Address</Text>
+              <Text style={styles.infoValue}>{userEmail}</Text>
+            </View>
+
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>Designation</Text>
+              <Text style={styles.infoValue}>{userDesignation}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity style={styles.btnContainer} onPress={onLogoutPress}>
+          <Text style={styles.logoutText}>Log Out</Text>
+        </TouchableOpacity>
+
+      </ScrollView>
     </SafeAreaView>
   );
 };

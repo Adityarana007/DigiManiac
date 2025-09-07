@@ -1,12 +1,24 @@
 import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE, CLOCK_IN, CLOCK_OUT, TIME_STATUS, TIME_ENTRIES } from "./apiUrls";
 import apiClient from "./client";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const register = async (params) => {
     return await apiClient.post(REGISTER, params)
 };
 
 export const login = async (params) => {
-    return await apiClient.post(LOGIN, params)
+    const response = await apiClient.post(LOGIN, params);
+    
+    // Clear session expired flag on successful login
+    if (response.status === 200) {
+        try {
+            await AsyncStorage.removeItem('SESSION_EXPIRED');
+        } catch (error) {
+            console.error('Error clearing session expired flag on login:', error);
+        }
+    }
+    
+    return response;
 }
 
 export const verifyEmail = async (params) => {

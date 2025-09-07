@@ -11,6 +11,8 @@ import { getHitSlop } from '../utils/helpers';
 import images from '../assets/images';
 import fonts from '../assets/fonts';
 import ProfileScreen from '../screens/Dashboard/Profile';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerActions } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const HeaderHeight = 40;
@@ -23,7 +25,8 @@ const getDeviceHeight = () => {
 };
 
 function BackHeader(props: any) {
-  // if ("routeParams" in props) consoleJson(props.officeObject.isActive);
+  const navigation = useNavigation();
+  
   return (
     <SafeAreaView
       style={[
@@ -55,6 +58,23 @@ function BackHeader(props: any) {
             flex: 1,
             paddingLeft: 5,
           }}>
+          {/* Hamburger Menu Icon */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            hitSlop={getHitSlop()}
+            onPress={() => {
+              console.log('Hamburger icon pressed');
+              navigation.dispatch(DrawerActions.openDrawer());
+            }}
+            style={{ marginRight: 10 }}>
+            <VectorIcon
+              type={IconsType.Ionicons}
+              name="menu-outline"
+              color={Colors.white}
+              size={24}
+            />
+          </TouchableOpacity>
+
           {typeof props.icon1 !== 'undefined' && (
             <TouchableOpacity
               activeOpacity={0.7}
