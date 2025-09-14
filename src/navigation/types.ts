@@ -13,6 +13,12 @@ export type AppStackParamList = {
     Tabs: undefined;
     Drawer: undefined;
     EditProfile: undefined;
+    SelectLeaveDate: undefined;
+  ApplyLeave: {
+    startDate: string;
+    endDate: string;
+    daysCount: number;
+  };
 }
 
 export type BottomTabParamList = {

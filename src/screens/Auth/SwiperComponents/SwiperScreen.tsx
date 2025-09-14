@@ -111,6 +111,7 @@ export default SwiperScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.white_f5f5f5,
   },
   slide: {
     flex: 1,
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: 20,
-    marginTop: Platform.OS === 'android' ? 40 : 10
+    marginTop: Platform.OS === 'android' ? 40 : 10,
   },
   countView: {
     flexDirection: 'row',

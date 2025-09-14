@@ -11,4 +11,6 @@ export const Colors = {
     validation_red: '#FF1A00',
     CARD_BACKGROUND: '#f2f3ef',
     APP_COLOR_SECONDARY: 'rgb(169,207,61)',
+    redStatus: '#FF4444',
+    colorGreen: '#10B981',
 }

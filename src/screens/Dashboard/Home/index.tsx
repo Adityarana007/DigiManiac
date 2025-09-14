@@ -1,35 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   SafeAreaView,
-  StyleSheet,
   Text,
   View,
-  TextInput,
-  ScrollView,
-  Image,
   TouchableOpacity,
-  FlatList,
   Alert,
 } from 'react-native';
 import styles from './styles';
-import images from '../../../assets/images';
-import { Icons } from '../../../assets/icons';
-import { getCategories, clockIn, clockOut, getTimeStatus } from '../../../api/auth';
-import {Strings} from '../../../assets/strings';
+import { clockIn, clockOut, getTimeStatus } from '../../../api/auth';
 import { Colors } from '../../../assets/colors';
-import fonts from '../../../assets/fonts';
 import VectorIcon from '../../../utils/VectorIcon';
 import { IconsType } from '../../../utils/constants';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../../../components/common/Loader';
 import { Spacer } from '../../../components/common/Spacer';
+import DSRPopup from '../../../components/common/DSRPopup';
 import DeviceInfo from 'react-native-device-info';
 
-type Category= {
-  name: string;
-  photo: string | null;
-}
 
 type TimeEntry = {
   id: string;
@@ -46,21 +34,24 @@ type TimeEntry = {
 }
 
 const HomeScreen = () => {
+  const navigation = useNavigation();
   const [isClockedIn, setIsClockedIn] = useState(false);
-  const [clockInTime, setClockInTime] = useState<string | null>(null);
-  const [workedDuration, setWorkedDuration] = useState<string>('');
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [_clockInTime, setClockInTime] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [timeEntry, setTimeEntry] = useState<TimeEntry | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [dailyLoggedHours, setDailyLoggedHours] = useState<string>('00:00');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  // DSR Popup State
+  const [showDSRModal, setShowDSRModal] = useState(false);
+  const [isDSRLoading, setIsDSRLoading] = useState(false);
+
   useEffect(() => {
     // Start timer when clocked in
     if (isClockedIn) {
       intervalRef.current = setInterval(() => {
-        setCurrentTime(new Date());
+        // Timer logic can be added here if needed
       }, 1000);
     } else {
       if (intervalRef.current) {
@@ -80,7 +71,7 @@ const HomeScreen = () => {
     const checkAndResetDailyHours = async () => {
       const today = new Date().toDateString();
       const lastLoggedDate = await AsyncStorage.getItem('lastLoggedDate');
-      
+
       if (lastLoggedDate !== today) {
         setDailyLoggedHours('00:00');
         await AsyncStorage.setItem('lastLoggedDate', today);
@@ -92,32 +83,25 @@ const HomeScreen = () => {
         }
       }
     };
-    
+
     checkAndResetDailyHours();
   }, []);
-
-  // Fetch time status when screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchTimeStatus();
-    }, [])
-  );
 
   const fetchTimeStatus = async () => {
     setIsLoadingStatus(true);
     try {
       const response = await getTimeStatus();
       console.log('Time status response:', response);
-      
+
       if (response.status === 200 && response.data?.success) {
-        const isClockedIn = response.data?.isClockedIn;
+        const clockedInStatus = response.data?.isClockedIn;
         const currentSession = response.data?.currentSession;
         const todaySummary = response.data?.todaySummary;
-        console.log('Is clocked in:', isClockedIn);
+        console.log('Is clocked in:', clockedInStatus);
         console.log('Current session:', currentSession);
         console.log('Today summary:', todaySummary);
-        
-        if (isClockedIn && currentSession) {
+
+        if (clockedInStatus && currentSession) {
           console.log('Setting clocked in state');
           setIsClockedIn(true);
           setTimeEntry({
@@ -126,7 +110,7 @@ const HomeScreen = () => {
             clockIn: currentSession.clockIn,
             status: 'active',
             notes: currentSession.notes,
-            location: currentSession.location
+            location: currentSession.location,
           });
           // Convert clockIn time to local time format
           const clockInDate = new Date(currentSession.clockIn);
@@ -138,7 +122,7 @@ const HomeScreen = () => {
           setTimeEntry(null);
           setClockInTime(null);
         }
-        
+
         // Update daily logged hours from todaySummary
         if (todaySummary) {
           const totalHours = todaySummary.totalTimeToday;
@@ -163,48 +147,45 @@ const HomeScreen = () => {
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour12: true, 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
-  };
+  // Fetch time status when screen comes into focus
+  const fetchTimeStatusCallback = useCallback(() => {
+    fetchTimeStatus();
+  }, []);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+  useFocusEffect(fetchTimeStatusCallback);
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
   const calculateDuration = (startTime: string) => {
     const start = new Date(startTime);
     const now = new Date();
-    
+
     const diffMs = now.getTime() - start.getTime();
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-    
+
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const addToDailyHours = (sessionDuration: string) => {
     const [sessionHours, sessionMinutes, sessionSeconds] = sessionDuration.split(':').map(Number);
     const [dailyHours, dailyMinutes] = dailyLoggedHours.split(':').map(Number);
-    
+
     // Convert everything to seconds for accurate calculation
     const sessionTotalSeconds = (sessionHours * 3600) + (sessionMinutes * 60) + (sessionSeconds || 0);
     const dailyTotalSeconds = (dailyHours * 3600) + (dailyMinutes * 60);
     const totalSeconds = sessionTotalSeconds + dailyTotalSeconds;
-    
+
     const newHours = Math.floor(totalSeconds / 3600);
     const newMinutes = Math.floor((totalSeconds % 3600) / 60);
-    
+
     const newDailyHours = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
     setDailyLoggedHours(newDailyHours);
     AsyncStorage.setItem('dailyLoggedHours', newDailyHours);
@@ -214,46 +195,45 @@ const HomeScreen = () => {
     setIsLoading(true);
     try {
       const params = {
-        notes: 'Starting work shift',
+        notes: '',
         location: {
           latitude: 40.7128,
           longitude: -74.0060,
         },
         deviceInfo: {
           deviceId: await DeviceInfo.getUniqueId(),
-        }
-      }
+        },
+      };
       const response = await clockIn(params);
       if (response.status === 200) {
         const now = new Date();
         const timeString = formatTime(now);
-        
+
         // Immediately update local state
         setIsClockedIn(true);
         setClockInTime(timeString);
-        
+
         // Create a temporary time entry for immediate UI update
         const tempTimeEntry: TimeEntry = {
           id: 'temp-' + Date.now(),
           userId: 1,
           clockIn: now.toISOString(),
           status: 'active',
-          notes: 'Starting work shift',
+          notes: '',
           location: {
             latitude: 40.7128,
             longitude: -74.0060,
             address: 'Office Building, New York',
-            _id: 'temp-location'
-          }
+            _id: 'temp-location',
+          },
         };
         setTimeEntry(tempTimeEntry);
-        
+
         // Then refresh from server to get the actual entry
         setTimeout(async () => {
           await fetchTimeStatus();
         }, 500);
-        
-        // Alert.alert('Success', `Clocked in at ${timeString}`);
+
       } else {
         // Alert.alert('Error', response.data?.message || 'Failed to clock in');
       }
@@ -265,46 +245,60 @@ const HomeScreen = () => {
     }
   };
 
-  const handleClockOut = async () => {
-    setIsLoading(true);
+  const handleClockOut = () => {
+    // Show DSR popup instead of directly clocking out
+    setShowDSRModal(true);
+  };
+
+  const handleDSRSubmit = async (dsr: string) => {
+    setIsDSRLoading(true);
     try {
-    const params = {
-      notes: 'Ending work shift',
-    }
+      const params = {
+        notes: dsr, // Use DSR as notes
+      };
+
       const response = await clockOut(params);
       console.log('Clock out response:', response);
-      
+
       if (response.status === 200) {
         const sessionDuration = timeEntry ? calculateDuration(timeEntry.clockIn) : '00:00';
-        
+
         // Add session duration to daily hours
         addToDailyHours(sessionDuration);
-        
+
         // Clear current session state
         setIsClockedIn(false);
         setClockInTime(null);
         setTimeEntry(null);
-        setWorkedDuration(''); // Clear worked duration since we're using daily hours
-        
-        // Alert.alert('Success', `Clocked out! Session duration: ${sessionDuration}`);
-        
+
+        // Close DSR modal
+        setShowDSRModal(false);
+
+        // Show success message
+
         // Refresh status after clock out
         setTimeout(async () => {
           await fetchTimeStatus();
         }, 500);
       } else {
-        // Alert.alert('Error', response.data?.message || 'Failed to clock out');
+        Alert.alert('Error', response.data?.message || 'Failed to clock out');
       }
     } catch (error) {
       console.log('Clock out error:', error);
-      // Alert.alert('Error', 'Something went wrong');
+      Alert.alert('Error', 'Something went wrong while clocking out');
     } finally {
-      setIsLoading(false);
+      setIsDSRLoading(false);
     }
   };
 
+  const handleDSRClose = () => {
+    setShowDSRModal(false);
+  };
+
   const getCurrentDuration = () => {
-    if (!isClockedIn || !timeEntry) return '00:00';
+    if (!isClockedIn || !timeEntry) {
+      return '00:00';
+    }
     return calculateDuration(timeEntry.clockIn);
   };
 
@@ -330,11 +324,10 @@ const HomeScreen = () => {
         <View style={[styles.mainCardView]}>
           {/* Quick Actions Section */}
           <View style={styles.quickActionsContainer}>
-            <TouchableOpacity 
-              style={styles.quickActionButton} 
+            <TouchableOpacity
+              style={styles.quickActionButton}
               onPress={() => {
-                // TODO: Navigate to Apply Leave screen
-                console.log('Apply Leave pressed');
+                navigation.navigate('SelectLeaveDate' as never);
               }}
             >
               <View style={styles.quickActionIconContainer}>
@@ -348,9 +341,9 @@ const HomeScreen = () => {
               <Text style={styles.quickActionTitle}>Apply</Text>
               <Text style={styles.quickActionSubtitle}>Leave</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.quickActionButton} 
+
+            <TouchableOpacity
+              style={styles.quickActionButton}
               onPress={() => {
                 // TODO: Navigate to Apply WFH screen
                 console.log('Apply WFH pressed');
@@ -367,9 +360,9 @@ const HomeScreen = () => {
               <Text style={styles.quickActionTitle}>Apply</Text>
               <Text style={styles.quickActionSubtitle}>WFH</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.quickActionButton} 
+
+            <TouchableOpacity
+              style={styles.quickActionButton}
               onPress={() => {
                 // TODO: Navigate to Leave Balance screen
                 console.log('Leave Balance pressed');
@@ -387,7 +380,7 @@ const HomeScreen = () => {
               <Text style={styles.quickActionSubtitle}>Balance</Text>
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.clockContainer}>
             {/* Header */}
             <View style={styles.header}>
@@ -399,8 +392,8 @@ const HomeScreen = () => {
               {/* Top Section - Day and Date */}
               <View style={styles.topSection}>
                 <View style={styles.dateInfo}>
-              <Text style={styles.title}>SHIFT TODAY</Text>
-              <Spacer margin={5} />
+                  <Text style={styles.title}>SHIFT TODAY</Text>
+                  <Spacer margin={5} />
                   <Text style={styles.currentDay}>
                     {new Date().toLocaleDateString('en-US', { weekday: 'long' })}
                   </Text>
@@ -408,7 +401,7 @@ const HomeScreen = () => {
                     {new Date().toLocaleDateString('en-US', {
                       day: '2-digit',
                       month: 'short',
-                      year: 'numeric'
+                      year: 'numeric',
                     })}
                   </Text>
                 </View>
@@ -478,6 +471,12 @@ const HomeScreen = () => {
         </View>
       </View>
       <Loader visible={isLoading} />
+      <DSRPopup
+        visible={showDSRModal}
+        onClose={handleDSRClose}
+        onSubmit={handleDSRSubmit}
+        isLoading={isDSRLoading}
+      />
     </SafeAreaView>
   );
 };

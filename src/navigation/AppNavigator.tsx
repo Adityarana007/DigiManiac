@@ -1,23 +1,16 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {AppStackParamList} from './types';
-import BottomTabNavigator from './BottomTabNavigator';
 import DrawerNavigator from './DrawerNavigator';
-import { TransitionPresets } from '@react-navigation/bottom-tabs';
-import { Image, Platform, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../assets/colors';
 import fonts from '../assets/fonts';
 import { getHitSlop } from '../utils/helpers';
 import images from '../assets/images';
 import EditProfileScreen from '../screens/Dashboard/Profile/EditProfile';
+import SelectLeaveDateScreen from '../screens/Dashboard/SelectLeaveDate';
+import ApplyLeaveScreen from '../screens/Dashboard/ApplyLeave';
 
 const HeaderHeight = 40;
-const getDeviceHeight = () => {
-  if (Platform.OS == 'android') {
-    return HeaderHeight
-  } else {
-    return undefined
-  }
-};
 const Stack = createNativeStackNavigator<AppStackParamList>();
 function BackHeader(props: any) {
   // if ("routeParams" in props) consoleJson(props.officeObject.isActive);
@@ -89,7 +82,7 @@ const AppNavigator = () => {
         name="Drawer"
         component={DrawerNavigator}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -123,6 +116,20 @@ const AppNavigator = () => {
           />
       ),
         })}
+      />
+      <Stack.Screen
+        name="SelectLeaveDate"
+        component={SelectLeaveDateScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ApplyLeave"
+        component={ApplyLeaveScreen}
+        options={{
+          headerShown: false,
+        }}
       />
     </Stack.Navigator>
   );
