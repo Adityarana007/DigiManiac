@@ -19,6 +19,7 @@ export type AppStackParamList = {
     endDate: string;
     daysCount: number;
   };
+  LeaveBalance: undefined;
 }
 
 export type BottomTabParamList = {
@@ -29,5 +30,5 @@ export type BottomTabParamList = {
   };
 
 export type DrawerParamList = {
-    MainTabs: undefined;
+    MainTabs: { screen?: keyof BottomTabParamList };
 };

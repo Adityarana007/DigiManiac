@@ -42,6 +42,7 @@ const HomeScreen = () => {
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [dailyLoggedHours, setDailyLoggedHours] = useState<string>('00:00');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // DSR Popup State
   const [showDSRModal, setShowDSRModal] = useState(false);
@@ -51,17 +52,20 @@ const HomeScreen = () => {
     // Start timer when clocked in
     if (isClockedIn) {
       intervalRef.current = setInterval(() => {
-        // Timer logic can be added here if needed
+        // Update current time to trigger re-render and recalculate duration
+        setCurrentTime(new Date());
       }, 1000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
 
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [isClockedIn]);
@@ -87,7 +91,15 @@ const HomeScreen = () => {
     checkAndResetDailyHours();
   }, []);
 
-  const fetchTimeStatus = async () => {
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', {
+      hour12: true,
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const fetchTimeStatus = useCallback(async () => {
     setIsLoadingStatus(true);
     try {
       const response = await getTimeStatus();
@@ -145,22 +157,14 @@ const HomeScreen = () => {
     } finally {
       setIsLoadingStatus(false);
     }
-  };
+  }, []);
 
   // Fetch time status when screen comes into focus
   const fetchTimeStatusCallback = useCallback(() => {
     fetchTimeStatus();
-  }, []);
+  }, [fetchTimeStatus]);
 
   useFocusEffect(fetchTimeStatusCallback);
-
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour12: true,
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
 
   const calculateDuration = (startTime: string) => {
     const start = new Date(startTime);
@@ -342,7 +346,7 @@ const HomeScreen = () => {
               <Text style={styles.quickActionSubtitle}>Leave</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.quickActionButton}
               onPress={() => {
                 // TODO: Navigate to Apply WFH screen
@@ -359,13 +363,12 @@ const HomeScreen = () => {
               </View>
               <Text style={styles.quickActionTitle}>Apply</Text>
               <Text style={styles.quickActionSubtitle}>WFH</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.quickActionButton}
               onPress={() => {
-                // TODO: Navigate to Leave Balance screen
-                console.log('Leave Balance pressed');
+                navigation.navigate('LeaveBalance' as never);
               }}
             >
               <View style={styles.quickActionIconContainer}>
@@ -434,7 +437,7 @@ const HomeScreen = () => {
                 <TouchableOpacity
                   style={[
                     styles.actionButton,
-                    isClockedIn ? styles.clockOutButton : styles.clockInButton
+                    isClockedIn ? styles.clockOutButton : styles.clockInButton,
                   ]}
                   onPress={isClockedIn ? handleClockOut : handleClockIn}
                   disabled={isLoading}
@@ -450,9 +453,12 @@ const HomeScreen = () => {
                     <Text style={styles.clockInTimeDisplay}>
                       ✓ Clocked in at {formatTime(new Date(timeEntry.clockIn))}
                     </Text>
-                    <Text style={styles.sessionDuration}>
-                      Session: {getCurrentDuration()}
-                    </Text>
+                    {/* currentTime triggers re-render for real-time duration updates */}
+                    {currentTime && (
+                      <Text style={styles.sessionDuration}>
+                        Session: {getCurrentDuration()}
+                      </Text>
+                    )}
                   </View>
                 )}
 

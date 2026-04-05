@@ -215,13 +215,6 @@ const SignupScreen = () => {
           <Image source={images.auth.google}/>
 
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.socialCircle, {marginHorizontal: 10}]}>
-          <Image source={images.auth.apple}/>
-
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.socialCircle}>
-          <Image source={images.auth.facebook}/>
-        </TouchableOpacity>
       </View>
 
      

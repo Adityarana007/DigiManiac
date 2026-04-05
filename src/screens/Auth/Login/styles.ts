@@ -95,7 +95,8 @@ const styles = StyleSheet.create({
       },
       createAccountView:{
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginTop: 30
       },
       logo:{
         alignSelf: 'center'

@@ -9,6 +9,7 @@ import images from '../assets/images';
 import EditProfileScreen from '../screens/Dashboard/Profile/EditProfile';
 import SelectLeaveDateScreen from '../screens/Dashboard/SelectLeaveDate';
 import ApplyLeaveScreen from '../screens/Dashboard/ApplyLeave';
+import LeaveBalanceScreen from '../screens/Dashboard/LeaveBalance';
 
 const HeaderHeight = 40;
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -127,6 +128,13 @@ const AppNavigator = () => {
       <Stack.Screen
         name="ApplyLeave"
         component={ApplyLeaveScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="LeaveBalance"
+        component={LeaveBalanceScreen}
         options={{
           headerShown: false,
         }}

@@ -39,7 +39,9 @@ const styles = StyleSheet.create({
     
     // Main Unified Card
     mainCard: {
-        backgroundColor: '#2C3E50',
+        // backgroundColor: '#2C3E50',
+        backgroundColor: Colors.white,
+
         borderRadius: 16,
         padding: 20,
         marginBottom: 20,

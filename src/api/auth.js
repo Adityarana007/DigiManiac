@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE, CLOCK_IN, CLOCK_OUT, TIME_STATUS, TIME_ENTRIES, APPLY_LEAVE } from "./apiUrls";
+import { GET_CATEGORIES, GET_PROFILE, LOGIN, REGISTER, UPDATE_PASSWORD, VERIFY_EMAIL, UPDATE_PROFILE, CLOCK_IN, CLOCK_OUT, TIME_STATUS, TIME_ENTRIES, APPLY_LEAVE, LEAVE_LIST } from "./apiUrls";
 import apiClient from "./client";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -58,4 +58,8 @@ export const getTimeEntries = async (params = {}) => {
 
 export const applyLeave = async (params) => {
     return await apiClient.post(APPLY_LEAVE, params)
+}
+
+export const getLeaveList = async (params = {}) => {
+    return await apiClient.get(LEAVE_LIST, params)
 }

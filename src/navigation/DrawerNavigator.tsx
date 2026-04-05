@@ -2,15 +2,14 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerParamList } from './types';
 import BottomTabNavigator from './BottomTabNavigator';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  SafeAreaView,
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
   Image,
-  Platform, 
-  ScrollView
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { Colors } from '../assets/colors';
 import fonts from '../assets/fonts';
@@ -24,17 +23,26 @@ const CustomDrawerContent = (props: any) => {
   const { navigation } = props;
 
   const menuItems = [
-      { name: 'Profile', icon: 'person-outline', screen: 'MainTabs' },
-    { name: 'Home', icon: 'home-outline', screen: 'MainTabs' },
-    { name: 'Shift Logs', icon: 'time-outline', screen: 'MainTabs' },
-    { name: 'Apply Leave', icon: 'calendar-outline', screen: 'MainTabs' },
-    { name: 'Settings', icon: 'settings-outline', screen: 'MainTabs' },
-    { name: 'Logout', icon: 'log-out-outline', screen: 'MainTabs' },
+    { name: 'Profile', icon: 'person-outline', type: 'tab', screen: 'Profile' },
+    { name: 'Shift Logs', icon: 'time-outline', type: 'tab', screen: 'Logs' },
+    { name: 'Apply Leave', icon: 'calendar-outline', type: 'stack', screen: 'SelectLeaveDate' },
+    { name: 'Settings', icon: 'settings-outline', type: 'tab', screen: 'Home' },
+    { name: 'Logout', icon: 'log-out-outline', type: 'tab', screen: 'Home' },
   ];
 
   const handleMenuPress = (item: any) => {
-    navigation.navigate('MainTabs');
     navigation.closeDrawer();
+
+    if (item.type === 'tab') {
+      // Navigate to a specific tab screen within MainTabs
+      navigation.navigate('MainTabs', { screen: item.screen });
+    } else if (item.type === 'stack') {
+      // Navigate to a stack screen (parent navigator - AppStack)
+      const parent = navigation.getParent();
+      if (parent) {
+        parent.navigate(item.screen);
+      }
+    }
   };
 
   return (
@@ -70,10 +78,12 @@ const CustomDrawerContent = (props: any) => {
   );
 };
 
+const drawerContent = (props: any) => <CustomDrawerContent {...props} />;
+
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerContent={drawerContent}
       screenOptions={{
         drawerStyle: {
           backgroundColor: Colors.APP_COLOR_DARK,
@@ -86,8 +96,8 @@ const DrawerNavigator = () => {
         drawerPosition: 'left',
       }}
     >
-      <Drawer.Screen 
-        name="MainTabs" 
+      <Drawer.Screen
+        name="MainTabs"
         component={BottomTabNavigator}
         options={{
           headerShown: false,
@@ -100,7 +110,7 @@ const DrawerNavigator = () => {
 const styles = StyleSheet.create({
   drawerContainer: {
     flex: 1,
-    backgroundColor: Colors.white_f5f5f5    ,
+    backgroundColor: Colors.white_f5f5f5,
   },
   drawerHeader: {
     padding: 20,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,6 +13,7 @@ import fonts from '../../../assets/fonts';
 import VectorIcon from '../../../utils/VectorIcon';
 import { IconsType } from '../../../utils/constants';
 import { Calendar } from 'react-native-calendars';
+import { getLeaveList } from '../../../api/auth';
 
 interface SelectedDates {
   startDate: string | null;
@@ -25,8 +26,9 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
     startDate: null,
     endDate: null,
   });
-  const [isSingleDay, setIsSingleDay] = useState(false);
+  const [isSingleDay, _setIsSingleDay] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [leaveDates, setLeaveDates] = useState<string[]>([]);
 
   const handleDateSelect = (day: any) => {
     const dateString = day.dateString;
@@ -34,6 +36,11 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
 
     // Prevent selection of past dates
     if (dateString < today) {
+      return;
+    }
+
+    // Prevent selection of leave dates
+    if (leaveDates.includes(dateString)) {
       return;
     }
 
@@ -63,38 +70,122 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
     }
   };
 
-  const toggleSingleDay = () => {
-    setIsSingleDay(!isSingleDay);
-    setSelectedDates({ startDate: null, endDate: null });
-    setSelectedDate('');
-  };
 
+  // Fetch leave list and extract all leave dates
+  useEffect(() => {
+    const fetchLeaveDates = async () => {
+      try {
+        const response = await getLeaveList();
+        if (response.status === 200 && response.data?.success && response.data?.leaves) {
+          const dates: string[] = [];
+
+          // Extract all dates from each leave range
+          response.data.leaves.forEach((leave: any) => {
+            const startDate = new Date(leave.startDate);
+            const endDate = new Date(leave.endDate);
+
+            // Generate all dates between start and end (inclusive)
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+              const dateString = d.toISOString().split('T')[0];
+              dates.push(dateString);
+            }
+          });
+
+          setLeaveDates(dates);
+        }
+      } catch (error) {
+        console.log('Error fetching leave list:', error);
+      }
+    };
+
+    fetchLeaveDates();
+  }, []);
 
   const getMarkedDates = () => {
     const markedDates: any = {};
 
-    if (isSingleDay && selectedDate) {
-      markedDates[selectedDate] = {
-        selected: true,
-        selectedColor: Colors.APP_COLOR_DARK,
+    // First, mark ALL leave dates with light red color and disable them
+    // Leave dates should always remain light red, even if within a selected range
+    leaveDates.forEach((dateString) => {
+      markedDates[dateString] = {
+        disabled: true, // Disable leave dates - make them non-clickable
+        marked: true,
+        selected: false, // Explicitly mark as NOT selected
+        dotColor: '#FFE5E5', // Light red dot indicator
+        customStyles: {
+          container: {
+            backgroundColor: '#FFE5E5', // Light red background
+            borderRadius: 16,
+          },
+          text: {
+            color: Colors.black,
+          },
+        },
       };
+    });
+
+    // Then, mark selected dates (but skip leave dates to preserve their light red color)
+    if (isSingleDay && selectedDate) {
+      // Only mark as selected if it's not a leave date
+      if (!leaveDates.includes(selectedDate)) {
+        markedDates[selectedDate] = {
+          selected: true,
+          selectedColor: Colors.APP_COLOR_DARK,
+          customStyles: {
+            container: {
+              backgroundColor: Colors.APP_COLOR_DARK,
+              borderRadius: 16,
+            },
+            text: {
+              color: Colors.white,
+            },
+          },
+        };
+      }
     } else if (selectedDates.startDate && selectedDates.endDate) {
-      // Mark range
+      // Mark range, but exclude leave dates within the range
       const start = new Date(selectedDates.startDate);
       const end = new Date(selectedDates.endDate);
 
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const dateString = d.toISOString().split('T')[0];
+
+        // Skip leave dates - they should not be selected even if in the range
+        if (leaveDates.includes(dateString)) {
+          continue;
+        }
+
         markedDates[dateString] = {
           selected: true,
           selectedColor: Colors.APP_COLOR_DARK,
+          customStyles: {
+            container: {
+              backgroundColor: Colors.APP_COLOR_DARK,
+              borderRadius: 16,
+            },
+            text: {
+              color: Colors.white,
+            },
+          },
         };
       }
     } else if (selectedDates.startDate) {
-      markedDates[selectedDates.startDate] = {
-        selected: true,
-        selectedColor: Colors.APP_COLOR_DARK,
-      };
+      // Only mark as selected if it's not a leave date
+      if (!leaveDates.includes(selectedDates.startDate)) {
+        markedDates[selectedDates.startDate] = {
+          selected: true,
+          selectedColor: Colors.APP_COLOR_DARK,
+          customStyles: {
+            container: {
+              backgroundColor: Colors.APP_COLOR_DARK,
+              borderRadius: 16,
+            },
+            text: {
+              color: Colors.white,
+            },
+          },
+        };
+      }
     }
 
     return markedDates;
@@ -114,10 +205,23 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
     } else if (selectedDates.startDate && selectedDates.endDate) {
       const start = new Date(selectedDates.startDate);
       const end = new Date(selectedDates.endDate);
-      const diffTime = Math.abs(end.getTime() - start.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end dates
-      return diffDays;
+      let count = 0;
+
+      // Count only non-leave dates in the range
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateString = d.toISOString().split('T')[0];
+        // Exclude leave dates from count
+        if (!leaveDates.includes(dateString)) {
+          count++;
+        }
+      }
+
+      return count;
     } else if (selectedDates.startDate) {
+      // Check if the single start date is a leave date
+      if (leaveDates.includes(selectedDates.startDate)) {
+        return 0;
+      }
       return 1;
     }
     return 0;
@@ -223,6 +327,7 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
             minDate={new Date().toISOString().split('T')[0]}
             disableAllTouchEventsForDisabledDays={true}
             disableAllTouchEventsForInactiveDays={true}
+            markingType={'custom'}
             theme={{
               backgroundColor: Colors.white,
               calendarBackground: Colors.white,
@@ -244,6 +349,18 @@ const SelectLeaveDateScreen = ({ navigation }: any) => {
             }}
             style={styles.calendar}
           />
+        </View>
+
+        {/* Legend */}
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, styles.legendColorBoxLeave]} />
+            <Text style={styles.legendText}>Leaves</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, styles.legendColorBoxSelected]} />
+            <Text style={styles.legendText}>Selected Date</Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -386,6 +503,38 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderRadius: 12,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 20,
+    gap: 24,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  legendColorBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.grey_A8A8A9,
+  },
+  legendColorBoxLeave: {
+    backgroundColor: '#FFE5E5',
+  },
+  legendColorBoxSelected: {
+    backgroundColor: Colors.APP_COLOR_DARK,
+  },
+  legendText: {
+    fontSize: 14,
+    fontFamily: fonts.montserratMedium,
+    color: Colors.black,
   },
   footer: {
     paddingHorizontal: 20,

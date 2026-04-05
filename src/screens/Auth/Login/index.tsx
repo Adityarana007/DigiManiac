@@ -176,20 +176,13 @@ const LoginScreen = () => {
           <Text style={styles.loginText}>{Strings.auth.login.loginButton}</Text>
         </TouchableOpacity>
 
-        <Text style={styles.orText}>- OR Continue with -</Text>
+        {/* <Text style={styles.orText}>- OR Continue with -</Text>
 
         <View style={styles.socialContainer}>
           <TouchableOpacity style={styles.socialCircle}>
             <Image source={images.auth.google} />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.socialCircle, {marginHorizontal: 10}]}>
-            <Image source={images.auth.apple} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialCircle}>
-            <Image source={images.auth.facebook} />
-          </TouchableOpacity>
-        </View>
+        </View> */}
 
         <View style={styles.createAccountView}>
           <Text style={styles.signupText}>{Strings.auth.login.createAccount}</Text>

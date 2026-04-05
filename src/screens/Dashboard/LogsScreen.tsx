@@ -233,13 +233,13 @@ const LogsScreen = () => {
     </View>
   );
 
-  const renderSession = (session: TimeEntry, index: number) => {
+  const renderSession = (session: TimeEntry, index: number, totalSessions: number) => {
     const clockOutTime = session.clockOut ? formatTime(session.clockOut) : '-';
 
     return (
       <View key={session.id} style={styles.sessionItem}>
         <View style={styles.sessionHeader}>
-          <Text style={styles.sessionNumber}>Session {index + 1}</Text>
+          <Text style={styles.sessionNumber}>Session {totalSessions - index}</Text>
           <Text style={styles.sessionDuration}>{formatHours(session.totalHours)}</Text>
         </View>
         <View style={styles.sessionTimes}>
@@ -310,8 +310,20 @@ const LogsScreen = () => {
         {!hasMissingData && dailyEntry.history.length > 0 && (
           <>
             {(() => {
-              const firstEntry = dailyEntry.history[0];
-              const lastEntry = dailyEntry.history[dailyEntry.history.length - 1];
+              // Find the earliest clockIn and latest clockOut
+              const firstEntry = dailyEntry.history.reduce((earliest, current) =>
+                new Date(current.clockIn).getTime() < new Date(earliest.clockIn).getTime() ? current : earliest
+              );
+              const lastEntry = dailyEntry.history.reduce((latest, current) => {
+                if (!current.clockOut) {
+                  return latest;
+                }
+                if (!latest.clockOut) {
+                  return current;
+                }
+                return new Date(current.clockOut).getTime() > new Date(latest.clockOut).getTime() ? current : latest;
+              }, dailyEntry.history[0]);
+
               const clockInTime = new Date(firstEntry.clockIn).toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -360,7 +372,18 @@ const LogsScreen = () => {
                       <View style={styles.sessionsSeparator} />
                       <View style={styles.sessionsContainer}>
                         <Text style={styles.sessionsTitle}>Sessions</Text>
-                        {dailyEntry.history.map((session, index) => renderSession(session, index))}
+                        {(() => {
+                          // Sort sessions by clockOut time (descending - latest first), or clockIn if no clockOut
+                          const sortedSessions = [...dailyEntry.history].sort((a, b) => {
+                            const timeA = a.clockOut ? new Date(a.clockOut).getTime() : new Date(a.clockIn).getTime();
+                            const timeB = b.clockOut ? new Date(b.clockOut).getTime() : new Date(b.clockIn).getTime();
+                            return timeB - timeA; // Descending order - latest first
+                          });
+
+                          return sortedSessions.map((session, index) =>
+                            renderSession(session, index, sortedSessions.length)
+                          );
+                        })()}
                       </View>
                     </>
                   )}
